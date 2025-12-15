@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
 
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
@@ -19,11 +20,18 @@ class RegisterAPIView(APIView):
             
             # Send registration email
             try:
+                # send_mail(
+                #     subject="Registration Successful",
+                #     message=f"Welcome to Public Notes API, {user.username}!\n\nYour account has been created successfully.\nYou can now login with your credentials.",
+                #     from_email=None,
+                #     recipient_list=[user.email],
+                # )
                 send_mail(
                     subject="Registration Successful",
-                    message=f"Welcome to Public Notes API, {user.username}!\n\nYour account has been created successfully.\nYou can now login with your credentials.",
-                    from_email=None,
+                    message="Your account has been created successfully.",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
+                    fail_silently=True,  # 🔥 VERY IMPORTANT
                 )
             except Exception as e:
                 print(f"Email error: {e}")
