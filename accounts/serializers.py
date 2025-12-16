@@ -5,10 +5,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     password2 = serializers.CharField(write_only=True, min_length=8)
+    email = serializers.EmailField()
     
     class Meta:
         model = User
         fields = ["username", "email", "password", "password2"]
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError("Email already registered")
+        return value
 
     def validate(self, data):
         if data['password'] != data['password2']:
